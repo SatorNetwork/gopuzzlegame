@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/SatorNetwork/gopuzzlegame/util"
 	"math"
+	"sort"
 )
 
 type Puzzle struct {
@@ -136,14 +137,15 @@ func (p *Puzzle) MoveTiles(tile *Tile, tilesToSwap []*Tile) *Puzzle {
 
 	if math.Abs(float64(dx)) + math.Abs(float64(dy)) > 1 {
 		shiftPointX := tile.CurrentPosition.X + util.GetSign(dx)
-		shiftPointY := tile.CurrentPosition.Y + util.GetSign(dx)
+		shiftPointY := tile.CurrentPosition.Y + util.GetSign(dy)
 		var tileToSwapWith *Tile
 		for _, t := range p.tiles {
 			if t.CurrentPosition.X == shiftPointX && t.CurrentPosition.Y == shiftPointY {
 				tileToSwapWith = t
+				break
 			}
 		}
-		tilesToSwap = append(tilesToSwap, tileToSwapWith)
+		tilesToSwap = append(tilesToSwap, tile)
 		return p.MoveTiles(tileToSwapWith, tilesToSwap)
 	} else {
 		tilesToSwap = append(tilesToSwap, tile)
@@ -169,3 +171,8 @@ func (p *Puzzle) SwapTiles(tilesToSwap []*Tile) *Puzzle {
 	return &Puzzle{tiles: p.tiles}
 }
 
+func (p *Puzzle) Sort() {
+	sort.Slice(p.tiles, func(i, j int) bool {
+		return p.tiles[i].CurrentPosition.CompareToBool(p.tiles[j].CurrentPosition)
+	})
+}

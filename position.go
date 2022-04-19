@@ -21,6 +21,22 @@ func (p *Position) CompareTo(other Position) int {
 	}
 }
 
+func (p *Position) CompareToBool(other Position) bool {
+	if p.Y < other.Y {
+		return false
+	} else if p.Y > other.Y {
+		return true
+	} else {
+		if p.X < other.X {
+			return false
+		} else if p.X > other.X {
+			return true
+		} else {
+			return false
+		}
+	}
+}
+
 func ShufflePositions(positions []Position) {
 
 }

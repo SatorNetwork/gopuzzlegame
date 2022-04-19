@@ -11,12 +11,26 @@ const (
 )
 
 type PuzzleController struct {
+	puzzleGame PuzzleGame
 	puzzleStatus PuzzleStatus
+	puzzle *Puzzle
 	PuzzleGameID string
+	stepsTaken int
 }
 
 func (p *PuzzleController) tapTile(tile *Tile) {
-
+	if p.puzzleStatus == PuzzleStatusIncomplete && p.puzzle.IsTileMovable(tile) {
+		mutablePuzzle := Puzzle{tiles: p.puzzle.tiles}
+		var tiles []*Tile
+		p.puzzle = mutablePuzzle.MoveTiles(tile, tiles)
+		p.puzzle.Sort()
+		p.stepsTaken++
+		if p.puzzle.IsComplete() {
+			p.puzzleStatus = PuzzleStatusComplete
+		} else if p.stepsTaken == p.puzzleGame.steps {
+			p.puzzleStatus = PuzzleStatusReachedStepLimit
+		}
+	}
 }
 
 func GeneratePuzzle(images [][]byte, size int, shuffle bool) *Puzzle {
