@@ -19,7 +19,7 @@ type PuzzleController struct {
 	Steps		 int
 }
 
-func (p *PuzzleController) tapTile(tile *Tile) {
+func (p *PuzzleController) TapTile(tile *Tile) {
 	if p.PuzzleStatus == PuzzleStatusIncomplete && p.Puzzle.IsTileMovable(tile) {
 		mutablePuzzle := Puzzle{tiles: p.Puzzle.tiles}
 		var tiles []*Tile
