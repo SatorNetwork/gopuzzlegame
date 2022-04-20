@@ -14,14 +14,13 @@ type PuzzleController struct {
 	//PuzzleGame   PuzzleGame
 	PuzzleStatus PuzzleStatus
 	Puzzle       *Puzzle
-	PuzzleGameID string
-	StepsTaken   int
-	Steps		 int
+	StepsTaken   int32
+	Steps		 int32
 }
 
 func (p *PuzzleController) TapTile(tile *Tile) {
 	if p.PuzzleStatus == PuzzleStatusIncomplete && p.Puzzle.IsTileMovable(tile) {
-		mutablePuzzle := Puzzle{tiles: p.Puzzle.tiles}
+		mutablePuzzle := Puzzle{Tiles: p.Puzzle.Tiles}
 		var tiles []*Tile
 		p.Puzzle = mutablePuzzle.MoveTiles(tile, tiles)
 		p.Puzzle.Sort()
@@ -34,7 +33,7 @@ func (p *PuzzleController) TapTile(tile *Tile) {
 	}
 }
 
-func GeneratePuzzle(images [][]byte, size int, shuffle bool) *Puzzle {
+func GeneratePuzzle(images []Image, size int, shuffle bool) *Puzzle {
 	var correctPositions []Position
 	var currentPositions []Position
 	whitespacePosition := Position{
@@ -65,21 +64,21 @@ func GeneratePuzzle(images [][]byte, size int, shuffle bool) *Puzzle {
 	}
 
 	tiles := getTileListFromPositions(size, images, correctPositions, currentPositions)
-	puzzle := &Puzzle{tiles: tiles}
+	puzzle := &Puzzle{Tiles: tiles}
 
 	if shuffle {
 		for !puzzle.IsSolvable() || puzzle.GetNumberOfCorrectTiles() != 0 {
 			rand.Shuffle(len(currentPositions), func(i, j int) {
 				currentPositions[i], currentPositions[j] = currentPositions[j], currentPositions[i]
 			})
-			puzzle = &Puzzle{tiles: getTileListFromPositions(size, images, correctPositions, currentPositions)}
+			puzzle = &Puzzle{Tiles: getTileListFromPositions(size, images, correctPositions, currentPositions)}
 		}
 	}
 
 	return puzzle
 }
 
-func getTileListFromPositions(size int, images [][]byte, correctPositions, currentPositions []Position) []*Tile {
+func getTileListFromPositions(size int, images []Image, correctPositions, currentPositions []Position) []*Tile {
 	whitespacePosition := Position{
 		X: size,
 		Y: size,
