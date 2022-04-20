@@ -1,4 +1,4 @@
-package main
+package gopuzzlegame
 
 type Position struct {
 	X int

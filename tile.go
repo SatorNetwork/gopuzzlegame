@@ -1,4 +1,4 @@
-package main
+package gopuzzlegame
 
 type Tile struct {
 	Image           []byte

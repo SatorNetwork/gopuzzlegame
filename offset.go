@@ -1,4 +1,4 @@
-package main
+package gopuzzlegame
 
 type Offset struct {
 	Dx int
