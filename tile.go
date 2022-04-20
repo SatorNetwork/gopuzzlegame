@@ -1,11 +1,11 @@
 package main
 
 type Tile struct {
-	Image []byte
-	Value int
+	Image           []byte
+	Value           int
 	CorrectPosition Position
 	CurrentPosition Position
-	IsWhitespace bool
+	IsWhitespace    bool
 }
 
 func Reverse(tiles []*Tile) {

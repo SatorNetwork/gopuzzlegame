@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/SatorNetwork/gopuzzlegame/util"
 	"math"
 	"sort"
+
+	"github.com/SatorNetwork/gopuzzlegame/util"
 )
 
 type Puzzle struct {
 	tiles []*Tile
-
 }
 
 func (p *Puzzle) GetDimension() int {
@@ -31,8 +31,8 @@ func (p *Puzzle) GetTileRelativeToWhitespaceTile(relativeOffset Offset) *Tile {
 	}
 
 	for _, tile := range p.tiles {
-		if tile.CurrentPosition.X == whitespaceTile.CurrentPosition.X + relativeOffset.Dx &&
-			tile.CurrentPosition.Y == whitespaceTile.CurrentPosition.Y + relativeOffset.Dy {
+		if tile.CurrentPosition.X == whitespaceTile.CurrentPosition.X+relativeOffset.Dx &&
+			tile.CurrentPosition.Y == whitespaceTile.CurrentPosition.Y+relativeOffset.Dy {
 			return tile
 		}
 	}
@@ -57,7 +57,7 @@ func (p *Puzzle) GetNumberOfCorrectTiles() int {
 }
 
 func (p *Puzzle) IsComplete() bool {
-	return (len(p.tiles) - 1) - p.GetNumberOfCorrectTiles() == 0
+	return (len(p.tiles)-1)-p.GetNumberOfCorrectTiles() == 0
 }
 
 func (p *Puzzle) IsTileMovable(tile *Tile) bool {
@@ -93,7 +93,9 @@ func (p *Puzzle) CountInversions() int {
 	count := 0
 	for a := 0; a < len(p.tiles); a++ {
 		tileA := p.tiles[a]
-		if tileA.IsWhitespace { continue }
+		if tileA.IsWhitespace {
+			continue
+		}
 		for b := a + 1; b < len(p.tiles); b++ {
 			tileB := p.tiles[b]
 			if p.isInversion(tileA, tileB) {
@@ -106,23 +108,23 @@ func (p *Puzzle) CountInversions() int {
 
 func (p *Puzzle) IsSolvable() bool {
 	size := p.GetDimension()
-	height := len(p.tiles)/size
-	if size * height != len(p.tiles) {
+	height := len(p.tiles) / size
+	if size*height != len(p.tiles) {
 		panic("tiles must be equal to size * height")
 	}
 
 	inversions := p.CountInversions()
-	if size % 2 == 1 {
-		return inversions % 2 == 0
+	if size%2 == 1 {
+		return inversions%2 == 0
 	}
 
 	whitespace := p.GetWhitespaceTile()
 	whitespaceRow := whitespace.CurrentPosition.Y
 
-	if (height - whitespaceRow + 1) % 2 == 1 {
-		return inversions % 2 == 0
+	if (height-whitespaceRow+1)%2 == 1 {
+		return inversions%2 == 0
 	} else {
-		return inversions % 2 == 1
+		return inversions%2 == 1
 	}
 }
 
@@ -135,7 +137,7 @@ func (p *Puzzle) MoveTiles(tile *Tile, tilesToSwap []*Tile) *Puzzle {
 	dx := whitespaceTile.CurrentPosition.X - tile.CurrentPosition.X
 	dy := whitespaceTile.CurrentPosition.Y - tile.CurrentPosition.Y
 
-	if math.Abs(float64(dx)) + math.Abs(float64(dy)) > 1 {
+	if math.Abs(float64(dx))+math.Abs(float64(dy)) > 1 {
 		shiftPointX := tile.CurrentPosition.X + util.GetSign(dx)
 		shiftPointY := tile.CurrentPosition.Y + util.GetSign(dy)
 		var tileToSwapWith *Tile

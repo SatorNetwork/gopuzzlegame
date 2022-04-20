@@ -11,24 +11,25 @@ const (
 )
 
 type PuzzleController struct {
-	puzzleGame PuzzleGame
-	puzzleStatus PuzzleStatus
-	puzzle *Puzzle
+	//PuzzleGame   PuzzleGame
+	PuzzleStatus PuzzleStatus
+	Puzzle       *Puzzle
 	PuzzleGameID string
-	stepsTaken int
+	StepsTaken   int
+	Steps		 int
 }
 
 func (p *PuzzleController) tapTile(tile *Tile) {
-	if p.puzzleStatus == PuzzleStatusIncomplete && p.puzzle.IsTileMovable(tile) {
-		mutablePuzzle := Puzzle{tiles: p.puzzle.tiles}
+	if p.PuzzleStatus == PuzzleStatusIncomplete && p.Puzzle.IsTileMovable(tile) {
+		mutablePuzzle := Puzzle{tiles: p.Puzzle.tiles}
 		var tiles []*Tile
-		p.puzzle = mutablePuzzle.MoveTiles(tile, tiles)
-		p.puzzle.Sort()
-		p.stepsTaken++
-		if p.puzzle.IsComplete() {
-			p.puzzleStatus = PuzzleStatusComplete
-		} else if p.stepsTaken == p.puzzleGame.steps {
-			p.puzzleStatus = PuzzleStatusReachedStepLimit
+		p.Puzzle = mutablePuzzle.MoveTiles(tile, tiles)
+		p.Puzzle.Sort()
+		p.StepsTaken++
+		if p.Puzzle.IsComplete() {
+			p.PuzzleStatus = PuzzleStatusComplete
+		} else if p.StepsTaken == p.Steps {
+			p.PuzzleStatus = PuzzleStatusReachedStepLimit
 		}
 	}
 }
@@ -85,8 +86,8 @@ func getTileListFromPositions(size int, images [][]byte, correctPositions, curre
 	}
 
 	var result []*Tile
-	for i := 1; i <= size * size; i++ {
-		if i == size * size {
+	for i := 1; i <= size*size; i++ {
+		if i == size*size {
 			result = append(result, &Tile{
 				Image:           images[i-1],
 				Value:           i,
