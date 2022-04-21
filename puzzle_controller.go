@@ -1,39 +1,55 @@
 package gopuzzlegame
 
-import "math/rand"
-
-type PuzzleStatus int
+import (
+	"fmt"
+	"github.com/pkg/errors"
+	"math/rand"
+)
 
 const (
-	PuzzleStatusIncomplete = iota
-	PuzzleStatusComplete
+	PuzzleGameStatusNew = iota
+	PuzzleStatusInProgress
+	PuzzleStatusFinished
 	PuzzleStatusReachedStepLimit
 )
 
 type PuzzleController struct {
-	//PuzzleGame   PuzzleGame
-	PuzzleStatus PuzzleStatus
+	PuzzleStatus int32
 	Puzzle       *Puzzle
 	StepsTaken   int32
 	Steps		 int32
 }
 
-func (p *PuzzleController) TapTile(tile *Tile) {
-	if p.PuzzleStatus == PuzzleStatusIncomplete && p.Puzzle.IsTileMovable(tile) {
+func (p *PuzzleController) TapTile(tile *Tile) error {
+	movable, err := p.Puzzle.IsTileMovable(tile)
+	if err != nil {
+		return err
+	}
+	if p.PuzzleStatus == PuzzleStatusInProgress && movable {
 		mutablePuzzle := Puzzle{Tiles: p.Puzzle.Tiles}
 		var tiles []*Tile
-		p.Puzzle = mutablePuzzle.MoveTiles(tile, tiles)
+		puzzle, err := mutablePuzzle.MoveTiles(tile, tiles)
+		if err != nil {
+			return err
+		}
+		p.Puzzle = puzzle
 		p.Puzzle.Sort()
 		p.StepsTaken++
-		if p.Puzzle.IsComplete() {
-			p.PuzzleStatus = PuzzleStatusComplete
+		isComplete, err := p.Puzzle.IsComplete()
+		if err != nil {
+			return err
+		}
+		if isComplete {
+			p.PuzzleStatus = PuzzleStatusFinished
 		} else if p.StepsTaken == p.Steps {
 			p.PuzzleStatus = PuzzleStatusReachedStepLimit
 		}
+		return nil
 	}
+	return errors.New(fmt.Sprintf("tile can't change location: puzzle_status: %v, movable: %v", p.PuzzleStatus, movable))
 }
 
-func GeneratePuzzle(images []Image, size int, shuffle bool) *Puzzle {
+func GeneratePuzzle(images []Image, size int, shuffle bool) (*Puzzle, error) {
 	var correctPositions []Position
 	var currentPositions []Position
 	whitespacePosition := Position{
@@ -67,15 +83,32 @@ func GeneratePuzzle(images []Image, size int, shuffle bool) *Puzzle {
 	puzzle := &Puzzle{Tiles: tiles}
 
 	if shuffle {
-		for !puzzle.IsSolvable() || puzzle.GetNumberOfCorrectTiles() != 0 {
+		isSolvable, err := puzzle.IsSolvable()
+		if err != nil {
+			return nil, err
+		}
+		numOfCorrectTiles, err := puzzle.GetNumberOfCorrectTiles()
+		if err != nil {
+			return nil, err
+		}
+
+		for !isSolvable || numOfCorrectTiles != 0 {
 			rand.Shuffle(len(currentPositions), func(i, j int) {
 				currentPositions[i], currentPositions[j] = currentPositions[j], currentPositions[i]
 			})
 			puzzle = &Puzzle{Tiles: getTileListFromPositions(size, images, correctPositions, currentPositions)}
+			isSolvable, err = puzzle.IsSolvable()
+			if err != nil {
+				return nil, err
+			}
+			numOfCorrectTiles, err = puzzle.GetNumberOfCorrectTiles()
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
-	return puzzle
+	return puzzle, nil
 }
 
 func getTileListFromPositions(size int, images []Image, correctPositions, currentPositions []Position) []*Tile {

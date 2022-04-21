@@ -1,11 +1,11 @@
 package gopuzzlegame
 
 type Tile struct {
-	Image 			Image
-	Value           int
-	CorrectPosition Position
-	CurrentPosition Position
-	IsWhitespace    bool
+	Image 			Image `json:"image"`
+	Value           int `json:"value"`
+	CorrectPosition Position `json:"correct_position"`
+	CurrentPosition Position `json:"current_position"`
+	IsWhitespace    bool `json:"is_whitespace"`
 }
 
 func Reverse(tiles []*Tile) {

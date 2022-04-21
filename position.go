@@ -1,8 +1,8 @@
 package gopuzzlegame
 
 type Position struct {
-	X int
-	Y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 func (p *Position) CompareTo(other Position) int {
@@ -35,8 +35,4 @@ func (p *Position) CompareToBool(other Position) bool {
 			return false
 		}
 	}
-}
-
-func ShufflePositions(positions []Position) {
-
 }

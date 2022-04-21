@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/SatorNetwork/gopuzzlegame/util"
+	"github.com/pkg/errors"
 )
 
 type Puzzle struct {
@@ -15,35 +16,35 @@ func (p *Puzzle) GetDimension() int {
 	return int(math.Sqrt(float64(len(p.Tiles))))
 }
 
-func (p *Puzzle) GetWhitespaceTile() *Tile {
+func (p *Puzzle) GetWhitespaceTile() (*Tile, error) {
 	for _, tile := range p.Tiles {
 		if tile.IsWhitespace {
-			return tile
+			return tile, nil
 		}
 	}
-	return nil
+	return nil, errors.New("whitespaceTile not found")
 }
 
-func (p *Puzzle) GetTileRelativeToWhitespaceTile(relativeOffset Offset) *Tile {
-	whitespaceTile := p.GetWhitespaceTile()
-	if whitespaceTile == nil {
-		return nil
+func (p *Puzzle) GetTileRelativeToWhitespaceTile(relativeOffset Offset) (*Tile, error) {
+	whitespaceTile, err := p.GetWhitespaceTile()
+	if err != nil {
+		return nil, err
 	}
 
 	for _, tile := range p.Tiles {
 		if tile.CurrentPosition.X == whitespaceTile.CurrentPosition.X+relativeOffset.Dx &&
 			tile.CurrentPosition.Y == whitespaceTile.CurrentPosition.Y+relativeOffset.Dy {
-			return tile
+			return tile, nil
 		}
 	}
 
-	return nil
+	return nil, errors.New("tile with relative offset not found")
 }
 
-func (p *Puzzle) GetNumberOfCorrectTiles() int {
-	whitespaceTile := p.GetWhitespaceTile()
-	if whitespaceTile == nil {
-		return 0
+func (p *Puzzle) GetNumberOfCorrectTiles() (int, error) {
+	whitespaceTile, err := p.GetWhitespaceTile()
+	if err != nil {
+		return 0, err
 	}
 
 	numberOfCorrectTiles := 0
@@ -53,29 +54,30 @@ func (p *Puzzle) GetNumberOfCorrectTiles() int {
 		}
 	}
 
-	return numberOfCorrectTiles
+	return numberOfCorrectTiles, nil
 }
 
-func (p *Puzzle) IsComplete() bool {
-	return (len(p.Tiles)-1)-p.GetNumberOfCorrectTiles() == 0
+func (p *Puzzle) IsComplete() (bool, error) {
+	num, err := p.GetNumberOfCorrectTiles()
+	return (len(p.Tiles)-1)-num == 0, err
 }
 
-func (p *Puzzle) IsTileMovable(tile *Tile) bool {
-	whitespaceTile := p.GetWhitespaceTile()
-	if whitespaceTile == nil {
-		return false
+func (p *Puzzle) IsTileMovable(tile *Tile) (bool, error) {
+	whitespaceTile, err := p.GetWhitespaceTile()
+	if err != nil {
+		return false, err
 	}
 
 	if tile == whitespaceTile {
-		return false
+		return false, nil
 	}
 
 	if whitespaceTile.CurrentPosition.X != tile.CurrentPosition.X &&
 		whitespaceTile.CurrentPosition.Y != tile.CorrectPosition.Y {
-		return false
+		return false, nil
 	}
 
-	return true
+	return true, nil
 }
 
 func (p *Puzzle) isInversion(a, b *Tile) bool {
@@ -106,7 +108,7 @@ func (p *Puzzle) CountInversions() int {
 	return count
 }
 
-func (p *Puzzle) IsSolvable() bool {
+func (p *Puzzle) IsSolvable() (bool, error) {
 	size := p.GetDimension()
 	height := len(p.Tiles) / size
 	if size*height != len(p.Tiles) {
@@ -115,23 +117,26 @@ func (p *Puzzle) IsSolvable() bool {
 
 	inversions := p.CountInversions()
 	if size%2 == 1 {
-		return inversions%2 == 0
+		return inversions % 2 == 0, nil
 	}
 
-	whitespace := p.GetWhitespaceTile()
+	whitespace, err := p.GetWhitespaceTile()
+	if err != nil {
+		return false, err
+	}
 	whitespaceRow := whitespace.CurrentPosition.Y
 
-	if (height-whitespaceRow+1)%2 == 1 {
-		return inversions%2 == 0
+	if (height - whitespaceRow + 1) % 2 == 1 {
+		return inversions % 2 == 0, nil
 	} else {
-		return inversions%2 == 1
+		return inversions % 2 == 1, nil
 	}
 }
 
-func (p *Puzzle) MoveTiles(tile *Tile, tilesToSwap []*Tile) *Puzzle {
-	whitespaceTile := p.GetWhitespaceTile()
-	if whitespaceTile == nil {
-		return nil
+func (p *Puzzle) MoveTiles(tile *Tile, tilesToSwap []*Tile) (*Puzzle, error) {
+	whitespaceTile, err := p.GetWhitespaceTile()
+	if err != nil {
+		return nil, err
 	}
 
 	dx := whitespaceTile.CurrentPosition.X - tile.CurrentPosition.X
@@ -155,14 +160,14 @@ func (p *Puzzle) MoveTiles(tile *Tile, tilesToSwap []*Tile) *Puzzle {
 	}
 }
 
-func (p *Puzzle) SwapTiles(tilesToSwap []*Tile) *Puzzle {
+func (p *Puzzle) SwapTiles(tilesToSwap []*Tile) (*Puzzle, error) {
 	Reverse(tilesToSwap)
 	for _, tileToSwap := range tilesToSwap {
 		tileIndex := IndexOfTileInTiles(p.Tiles, tileToSwap)
 		tile := p.Tiles[tileIndex]
-		whitespaceTile := p.GetWhitespaceTile()
-		if whitespaceTile == nil {
-			return nil
+		whitespaceTile, err := p.GetWhitespaceTile()
+		if err != nil {
+			return nil, err
 		}
 		whitespaceTileIndex := IndexOfTileInTiles(p.Tiles, whitespaceTile)
 
@@ -170,7 +175,7 @@ func (p *Puzzle) SwapTiles(tilesToSwap []*Tile) *Puzzle {
 		p.Tiles[whitespaceTileIndex] = whitespaceTile.CopyWith(tile.CurrentPosition)
 	}
 
-	return &Puzzle{Tiles: p.Tiles}
+	return &Puzzle{Tiles: p.Tiles}, nil
 }
 
 func (p *Puzzle) Sort() {
