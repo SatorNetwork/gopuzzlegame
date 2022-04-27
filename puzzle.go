@@ -117,7 +117,7 @@ func (p *Puzzle) IsSolvable() (bool, error) {
 
 	inversions := p.CountInversions()
 	if size%2 == 1 {
-		return inversions % 2 == 0, nil
+		return inversions%2 == 0, nil
 	}
 
 	whitespace, err := p.GetWhitespaceTile()
@@ -126,10 +126,10 @@ func (p *Puzzle) IsSolvable() (bool, error) {
 	}
 	whitespaceRow := whitespace.CurrentPosition.Y
 
-	if (height - whitespaceRow + 1) % 2 == 1 {
-		return inversions % 2 == 0, nil
+	if (height-whitespaceRow+1)%2 == 1 {
+		return inversions%2 == 0, nil
 	} else {
-		return inversions % 2 == 1, nil
+		return inversions%2 == 1, nil
 	}
 }
 

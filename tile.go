@@ -1,11 +1,11 @@
 package gopuzzlegame
 
 type Tile struct {
-	Image 			Image `json:"image"`
-	Value           int `json:"value"`
+	Image           Image    `json:"image"`
+	Value           int      `json:"value"`
 	CorrectPosition Position `json:"correct_position"`
 	CurrentPosition Position `json:"current_position"`
-	IsWhitespace    bool `json:"is_whitespace"`
+	IsWhitespace    bool     `json:"is_whitespace"`
 }
 
 func Reverse(tiles []*Tile) {
@@ -25,7 +25,7 @@ func IndexOfTileInTiles(tiles []*Tile, tile *Tile) int {
 
 func (t *Tile) CopyWith(currentPosition Position) *Tile {
 	return &Tile{
-		Image: 			 t.Image,
+		Image:           t.Image,
 		Value:           t.Value,
 		CorrectPosition: t.CorrectPosition,
 		CurrentPosition: currentPosition,

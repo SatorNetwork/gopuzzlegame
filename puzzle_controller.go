@@ -2,8 +2,9 @@ package gopuzzlegame
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"math/rand"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -17,7 +18,7 @@ type PuzzleController struct {
 	PuzzleStatus int32
 	Puzzle       *Puzzle
 	StepsTaken   int32
-	Steps		 int32
+	Steps        int32
 }
 
 func (p *PuzzleController) TapTile(tile *Tile) error {
