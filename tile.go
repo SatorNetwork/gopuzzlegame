@@ -1,7 +1,6 @@
 package gopuzzlegame
 
 type Tile struct {
-	Image           Image    `json:"image"`
 	Value           int      `json:"value"`
 	CorrectPosition Position `json:"-"`
 	CurrentPosition Position `json:"current_position"`
@@ -25,7 +24,6 @@ func IndexOfTileInTiles(tiles []*Tile, tile *Tile) int {
 
 func (t *Tile) CopyWith(currentPosition Position) *Tile {
 	return &Tile{
-		Image:           t.Image,
 		Value:           t.Value,
 		CorrectPosition: t.CorrectPosition,
 		CurrentPosition: currentPosition,
