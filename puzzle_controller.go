@@ -50,7 +50,7 @@ func (p *PuzzleController) TapTile(tile *Tile) error {
 	return errors.New(fmt.Sprintf("tile can't change location: puzzle_status: %v, movable: %v", p.PuzzleStatus, movable))
 }
 
-func GeneratePuzzle(images []Image, size int, shuffle bool) (*Puzzle, error) {
+func GeneratePuzzle(size int, shuffle bool) (*Puzzle, error) {
 	var correctPositions []Position
 	var currentPositions []Position
 	whitespacePosition := Position{
@@ -80,7 +80,7 @@ func GeneratePuzzle(images []Image, size int, shuffle bool) (*Puzzle, error) {
 		})
 	}
 
-	tiles := getTileListFromPositions(size, images, correctPositions, currentPositions)
+	tiles := getTileListFromPositions(size, correctPositions, currentPositions)
 	puzzle := &Puzzle{Tiles: tiles}
 
 	if shuffle {
@@ -97,7 +97,7 @@ func GeneratePuzzle(images []Image, size int, shuffle bool) (*Puzzle, error) {
 			rand.Shuffle(len(currentPositions), func(i, j int) {
 				currentPositions[i], currentPositions[j] = currentPositions[j], currentPositions[i]
 			})
-			puzzle = &Puzzle{Tiles: getTileListFromPositions(size, images, correctPositions, currentPositions)}
+			puzzle = &Puzzle{Tiles: getTileListFromPositions(size, correctPositions, currentPositions)}
 			isSolvable, err = puzzle.IsSolvable()
 			if err != nil {
 				return nil, err
@@ -112,7 +112,7 @@ func GeneratePuzzle(images []Image, size int, shuffle bool) (*Puzzle, error) {
 	return puzzle, nil
 }
 
-func getTileListFromPositions(size int, images []Image, correctPositions, currentPositions []Position) []*Tile {
+func getTileListFromPositions(size int, correctPositions, currentPositions []Position) []*Tile {
 	whitespacePosition := Position{
 		X: size,
 		Y: size,
