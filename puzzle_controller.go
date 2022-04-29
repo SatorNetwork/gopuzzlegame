@@ -123,14 +123,14 @@ func getTileListFromPositions(size int, correctPositions, currentPositions []Pos
 		if i == size*size {
 			result = append(result, &Tile{
 				Value:           i,
-				CorrectPosition: whitespacePosition,
+				CorrectPosition: &whitespacePosition,
 				CurrentPosition: currentPositions[i-1],
 				IsWhitespace:    true,
 			})
 		} else {
 			result = append(result, &Tile{
 				Value:           i,
-				CorrectPosition: correctPositions[i-1],
+				CorrectPosition: &correctPositions[i-1],
 				CurrentPosition: currentPositions[i-1],
 			})
 		}

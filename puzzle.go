@@ -49,7 +49,10 @@ func (p *Puzzle) GetNumberOfCorrectTiles() (int, error) {
 
 	numberOfCorrectTiles := 0
 	for _, tile := range p.Tiles {
-		if tile != whitespaceTile && tile.CurrentPosition == tile.CorrectPosition {
+		if tile.CorrectPosition == nil {
+			return 0, errors.New("correct position is null")
+		}
+		if tile != whitespaceTile && tile.CurrentPosition == *tile.CorrectPosition {
 			numberOfCorrectTiles++
 		}
 	}

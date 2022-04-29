@@ -2,7 +2,7 @@ package gopuzzlegame
 
 type Tile struct {
 	Value           int      `json:"value"`
-	CorrectPosition Position `json:"-"`
+	CorrectPosition *Position `json:"correct_position,omitempty"`
 	CurrentPosition Position `json:"current_position"`
 	IsWhitespace    bool     `json:"is_whitespace"`
 }
