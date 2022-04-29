@@ -73,7 +73,7 @@ func (p *Puzzle) IsTileMovable(tile *Tile) (bool, error) {
 	}
 
 	if whitespaceTile.CurrentPosition.X != tile.CurrentPosition.X &&
-		whitespaceTile.CurrentPosition.Y != tile.CorrectPosition.Y {
+		whitespaceTile.CurrentPosition.Y != tile.CurrentPosition.Y {
 		return false, nil
 	}
 
